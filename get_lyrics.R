@@ -25,6 +25,7 @@ print(country_list)
 
 # Put the list into a data frame and tidy it up
 countries <- data.frame(country_list)
+
 names(countries) <- "country"                   # Name the first field country
 countries$country <- trimws(countries$country)  # remove leading and training blanks
 countries$country <- gsub("&","And",countries$country)
