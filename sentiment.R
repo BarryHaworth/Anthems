@@ -54,3 +54,19 @@ anthem_bing <- anthem_words_bing %>%
   count(sentiment) %>% # count the # of positive & negative words
   spread(sentiment, n, fill = 0) %>% # made data wide rather than narrow
   mutate(sentiment = positive - negative)
+
+anthem_nrc <- anthem_words_nrc %>%
+  group_by(country) %>% 
+  count(sentiment) %>% # count the # of positive & negative words
+  spread(sentiment, n, fill = 0) %>% # made data wide rather than narrow
+  mutate(sentiment = positive - negative)
+
+anthem_afinn <- anthem_words_afinn %>%
+  group_by(country) %>% 
+  summarize(Mean = mean(value, na.rm = TRUE)) # Mean of Sentiment socre
+
+# Save the Sentiment summaries
+save(anthem_bing,file=paste0(DATA_DIR,"/anthem_bing.RData"))
+save(anthem_nrc,file=paste0(DATA_DIR,"/anthem_nrc.RData"))
+save(anthem_afinn,file=paste0(DATA_DIR,"/anthem_afinn.RData"))
+
