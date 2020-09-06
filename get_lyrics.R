@@ -12,7 +12,6 @@ library(httr)
 
 PROJECT_DIR <- "c:/R/Anthems"
 DATA_DIR    <- "c:/R/Anthems/data"
-TEXT_DIR    <- "c:/R/Anthems/text"
 
 # Get List of Countries:
 

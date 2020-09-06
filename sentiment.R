@@ -1,4 +1,4 @@
-# Step 2: Perform Sentiment Anlaysis
+# Step 2: Perform Sentiment Analysis
 # Load the previously captured data and perform sentiment analysis on it
 
 library(dplyr)
@@ -8,7 +8,6 @@ library(tidyr)
 
 PROJECT_DIR <- "c:/R/Anthems"
 DATA_DIR    <- "c:/R/Anthems/data"
-TEXT_DIR    <- "c:/R/Anthems/text"
 
 # Load the data
 load(paste0(DATA_DIR,"/countries.RData"))
@@ -19,7 +18,7 @@ countries <- countries %>% filter(nchar(lyrics) > 5)
 head(countries$lyrics)
 
 # Sentiment Analysis
-# Number words, postitive, negative
+# Number words, positive, negative
 # tidytext has three Lexicons:
 # nrc:   Positive, Negative, anger, anticipation, disgust, fear, joy, sadness, surprise, and trust  <- Use this one
 # bing:  positive, negative
@@ -43,7 +42,7 @@ head(bing_vector)  # Positive or Negative
 head(nrc_vector)   # Positive or Negative & others
 head(afinn_vector) # Score
 
-# Assign sentitment using each of the three databases
+# Assign sentiment using each of the three databases
 anthem_words_bing  <- anthem_words %>% left_join(bing_vector)
 anthem_words_nrc   <- anthem_words %>% left_join(nrc_vector)
 anthem_words_afinn <- anthem_words %>% left_join(afinn_vector)
@@ -65,8 +64,13 @@ anthem_afinn <- anthem_words_afinn %>%
   group_by(country) %>% 
   summarize(Mean = mean(value, na.rm = TRUE)) # Mean of Sentiment socre
 
+# Save Sentiment Words
+save(anthem_words_bing ,file=paste0(DATA_DIR,"/anthem_words_bing.RData"))
+save(anthem_words_nrc  ,file=paste0(DATA_DIR,"/anthem_words_nrc.RData"))
+save(anthem_words_afinn,file=paste0(DATA_DIR,"/anthem_words_afinn.RData"))
+
 # Save the Sentiment summaries
-save(anthem_bing,file=paste0(DATA_DIR,"/anthem_bing.RData"))
-save(anthem_nrc,file=paste0(DATA_DIR,"/anthem_nrc.RData"))
+save(anthem_bing ,file=paste0(DATA_DIR,"/anthem_bing.RData"))
+save(anthem_nrc  ,file=paste0(DATA_DIR,"/anthem_nrc.RData"))
 save(anthem_afinn,file=paste0(DATA_DIR,"/anthem_afinn.RData"))
 
