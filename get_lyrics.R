@@ -30,21 +30,40 @@ countries$country <- trimws(countries$country)  # remove leading and training bl
 countries$country <- gsub("&","And",countries$country)
 countries$country <- gsub("'","",countries$country)
 
-# Country names to drop
-countries <- subset(countries,country != "Historic Austrian Anthems")
-countries <- subset(countries,country != "Historic German anthems:")
-countries <- subset(countries,country != "China")
-countries <- subset(countries,country != "Historic anthem (until 1963)")
-countries <- subset(countries,country != "Lithuanian SSR (Historic)")
-countries <- subset(countries,country != "Grand Ducal anthem")
+# Country names to drop.  These countries do not have anthems on the web page
+droplist = c("Historic Austrian Anthems","Historic German anthems:","China",
+             "Historic anthem (until 1963)","Lithuanian SSR (Historic)","Grand Ducal anthem",
+             "Historic Bosnian Anthem","Estonian SSR (Historic)","German Democratic Republic")
 
-# Country names to update.
+# Drop the countries in the list
+countries <- countries %>% filter(!(country %in% droplist))
 
 head(countries)
 
-# save(countries,file=paste0(DATA_DIR,"/countries.RData"))
+# Manual updates to country names
+countries$country[countries$country=="First Republic (unofficial)"] <- "First Republic Of Austria"
 
+countries$country[countries$country=="Bosnia and Herzegovina (1995-1998)"] <-   "Bosnia And Herzegovina (1995-1998)"
 
+countries$country[countries$country=="Peoples Republic of China (Mainland China)"] <- "China (PRR)"
+countries$country[countries$country=="Republic of China (Taiwan)"] <- "China (Republic Of China)"
+countries$country[countries$country=="Czech RepublicD-F"] <- "Czech Republic"
+countries$country[countries$country=="National anthem"] <- "Denmark (Civil)"
+countries$country[countries$country=="Royal anthem"] <- "Denmark (Royal)"
+countries$country[countries$country=="FranceG-J"] <- "France"
+countries$country[countries$country=="JapanK-N"] <- "Japan"
+countries$country[countries$country=="Kiswahili"] <- "Kenya (Kiswahili)"
+countries$country[countries$country=="English"] <- "Kenya (English)"
+countries$country[countries$country=="Latvian SSR (Historic)"] <- "Latvian (SSR)"
+countries$country[countries$country=="The Netherlands"] <- "Netherlands"
+countries$country[countries$country=="Norway (current)O-S"] <- "Norway I"
+countries$country[countries$country=="Soviet Union (Historic 1922 version)"] <- "Soviet Union 1922"
+countries$country[countries$country=="Soviet Union (Historic 1944 version)"] <- "Soviet Union 1944"
+countries$country[countries$country=="Soviet Union (Historic 1977 version)"] <- "Soviet Union 1977"
+countries$country[countries$country=="Saint Kitts And Nevis"] <- "Saint Kitts & Nevis"
+countries$country[countries$country=="Saint Vincent And the Grenadines"] <- "Saint Vincent And The Grenadines"
+countries$country[countries$country=="Scotland (unofficial)"] <- "Scotland (Flower Of Scotland)"
+countries$country[countries$country=="SyriaT-Z"] <- "Syria"
 
 # Get the lyrics
 
@@ -109,8 +128,8 @@ countries$lyrics <- gsub("([A-Z])", " \\1",countries$lyrics)  # Insert spaces in
 countries$lyrics <- trimws(countries$lyrics)  # remove leading and training blanks
 
 # Outstanding problems.
-# Some anthems not found
 # Some anthems do not pick up the english language version when it exists.
+# Some anthems seem to not have English lyrics.
 
 countries$anthem_type <- factor(countries$anthem_type)
 summary(countries$anthem_type)

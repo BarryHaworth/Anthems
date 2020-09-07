@@ -20,7 +20,17 @@ load(paste0(DATA_DIR,"/anthem_words_afinn.RData"))
 
 # Do a Boxplot of Word sentiment for selected countries
 
-subset <- c("USA","Australia","New Zealand","United Kingdom","India")
+subset <- c("USA","Australia","New Zealand","United Kingdom","France")
+
+anthem_words_subset <- anthem_words_afinn %>% filter(country %in% subset)
+
+p <- ggplot(anthem_words_subset, aes(y=value, x=country))+
+  geom_boxplot() + 
+  labs(title="Sentiment Comparison by Country (Subset)") +
+  xlab("Country") +ylab("Sentiment")
+p
+
+subset <- c("India","China (PRR)","China (Republic Of China)","Vietnam")
 
 anthem_words_subset <- anthem_words_afinn %>% filter(country %in% subset)
 
