@@ -72,7 +72,8 @@ names(anthem_nrc) <- c("country","nrc_anger","nrc_anticipation","nrc_disgust","n
 
 anthem_afinn <- anthem_words_afinn %>%
   group_by(country) %>% 
-  summarize(afinn_sentiment = mean(value, na.rm = TRUE)) %>% # Mean of Sentiment score
+  summarize(afinn_sentiment = mean(value, na.rm = TRUE)) %>%                       # Mean of Sentiment score
+  mutate(afinn_sentiment = ifelse(is.na(afinn_sentiment),0,afinn_sentiment)) %>%   # Impute missing with zero
   mutate(afinn_sentiment_pct = afinn_sentiment/5)
 
 # Combine all the sentiment ratings and the lyrics, etc.
@@ -83,6 +84,7 @@ anthems <- anthem_afinn %>%
 
 head(anthems)
 
+summary(anthems[c("afinn_sentiment_pct","bing_sentiment_pct","nrc_sentiment_pct")])
 cor(anthems[c("afinn_sentiment_pct","bing_sentiment_pct","nrc_sentiment_pct")])
 
 # Save Sentiment Words
