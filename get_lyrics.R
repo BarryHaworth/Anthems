@@ -3,6 +3,7 @@
 #  This program is intended to harvest the lyrics and store them in text files.
 # Lyrics will be taken from:
 # https://lyrics.fandom.com/wiki/LyricWiki:Lists/National_Anthem
+# page part identified using SelectorGadget tool.
 
 library(rvest)
 library(dplyr)
@@ -30,31 +31,37 @@ countries$country <- trimws(countries$country)  # remove leading and training bl
 countries$country <- gsub("&","And",countries$country)
 countries$country <- gsub("'","",countries$country)
 
-# Country names to drop.  These countries do not have anthems on the web page
-droplist = c("Historic Austrian Anthems","Historic German anthems:","China",
+# Some anthems seem to not have English lyrics.
+# Drop countries with no anthem or no English translation
+# These countries do not have anthems on the web page
+noanthem <-  c("Historic Austrian Anthems","Historic German anthems:","China",
              "Historic anthem (until 1963)","Lithuanian SSR (Historic)","Grand Ducal anthem",
-             "Historic Bosnian Anthem","Estonian SSR (Historic)","German Democratic Republic")
+             "Historic Bosnian Anthem","Estonian SSR (Historic)","German Democratic Republic",
+             "Kenya (Kiswahili)","Kenya (English)","European Union")
 
-# Drop the countries in the list
-countries <- countries %>% filter(!(country %in% droplist))
+# These countries have no English translation
+notrans <- c("Ecuador","Venezuela","SyriaT-Z","Switzerland","Sweden",
+            "Soviet Union (Historic 1922 version)","Soviet Union (Historic 1944 version)","Soviet Union (Historic 1977 version)",
+            "Poland","Bosnia And Herzegovina","Bosnia and Herzegovina (1995-1998)",
+            "Chile","Cornwall (national song, unofficial)","Cuba","Czech RepublicD-F",
+            "Dominican Republic","Ecuador","El Salvador","Estonia",
+            "Hungary","Italy","Latvia","Latvian SSR (Historic)","Liechtenstein","Luxemburg",
+            "Madagascar","Malaysia","Norway (current)O-S","Panama")
+
+countries <- countries %>% filter(!(country %in% c(noanthem,notrans)))
 
 head(countries)
 
 # Manual updates to country names
 countries$country[countries$country=="First Republic (unofficial)"] <- "First Republic Of Austria"
-
-countries$country[countries$country=="Bosnia and Herzegovina (1995-1998)"] <-   "Bosnia And Herzegovina (1995-1998)"
-
 countries$country[countries$country=="Peoples Republic of China (Mainland China)"] <- "China (PRR)"
 countries$country[countries$country=="Republic of China (Taiwan)"] <- "China (Republic Of China)"
-countries$country[countries$country=="Czech RepublicD-F"] <- "Czech Republic"
 countries$country[countries$country=="National anthem"] <- "Denmark (Civil)"
 countries$country[countries$country=="Royal anthem"] <- "Denmark (Royal)"
 countries$country[countries$country=="FranceG-J"] <- "France"
 countries$country[countries$country=="JapanK-N"] <- "Japan"
 countries$country[countries$country=="Kiswahili"] <- "Kenya (Kiswahili)"
 countries$country[countries$country=="English"] <- "Kenya (English)"
-countries$country[countries$country=="Latvian SSR (Historic)"] <- "Latvian (SSR)"
 countries$country[countries$country=="The Netherlands"] <- "Netherlands"
 countries$country[countries$country=="Norway (current)O-S"] <- "Norway I"
 countries$country[countries$country=="Soviet Union (Historic 1922 version)"] <- "Soviet Union 1922"
@@ -63,11 +70,8 @@ countries$country[countries$country=="Soviet Union (Historic 1977 version)"] <- 
 countries$country[countries$country=="Saint Kitts And Nevis"] <- "Saint Kitts & Nevis"
 countries$country[countries$country=="Saint Vincent And the Grenadines"] <- "Saint Vincent And The Grenadines"
 countries$country[countries$country=="Scotland (unofficial)"] <- "Scotland (Flower Of Scotland)"
-countries$country[countries$country=="SyriaT-Z"] <- "Syria"
 
-# Get the lyrics
-
-# Next:  Loop through the countries and extract the lyrics.
+# Get the lyrics:  Loop through the countries and extract the lyrics.
 
 countries["anthem_type"] <- ""
 countries["url"] <- ""
@@ -124,12 +128,20 @@ for (c in 1:length(countries$country)){
   }
 }
 
+# Outstanding problems.
+# Some anthems do not pick up the english language version when it exists.
+
+# Manually correct selected 
+countries$lyrics[countries$country=="Austria"] <- "Land of mountains, land by the stream, Land of fields, land of cathedrals, Land of hammers, with a promising future, Home to great daughters and sons, A nation highly blessed with beauty, Much-praised Austria, Much-praised Austria! Strongly feuded for, fiercely hard-fought for, Thou liest in the middle of the continent Like a strong heart, Since the early days of the ancestors thou hast Borne the burden of a high mission, Much tried Austria, Much tried Austria.  Bravely towards the new ages See us striding, free, and faithful, Assiduous and full of hope, Unified, in jubilation choirs, let us Pledge allegiance to thee, Fatherland Much beloved Austria, Much beloved Austria."
+countries$lyrics[countries$country=="Germany"] <- "Unity and justice and freedom For the German fatherland! For these let us all strive Brotherly with heart and hand! Unity and justice and freedom Are the pledge of fortune; Flourish in this fortune's blessing, Flourish, German fatherland!  Flourish in this fortune's blessing, Flourish, German fatherland!"
+countries$lyrics[countries$country=="Brittany (national song, unofficial)"] <- "Us, Bretons by heart, love our true country! Armorica, famous throughout the world. Without any fear in battle, our so good fathers, Shed their blood for you. Brittany, my country that I love, As long as the sea, like a wall surrounds you, Shall my country be free! Brittany, land of the Old Saints, land of the bards, There is no other country that I love as much. Every mountain, every glen is the dearest to my heart, Many an heroic Breton are resting there. The Bretons are a strong and tough people. No people under the skies is as brave as them, Whether they may sing a sad gwerz or a nice song. Oh, my so beautiful country! If in the past Brittany may have been defeated in battle, Her language will always remain well alive, Her flaming heart is still beating in her chest : You are now awakened, my dear Brittany!"
+countries$lyrics[countries$country=="South Africa"] <- "Land of mountains, land by the stream, Land of fields, land of cathedrals, Land of hammers, with a promising future, Home to great daughters and sons, A nation highly blessed with beauty, Much-praised Austria, Much-praised Austria! Strongly feuded for, fiercely hard-fought for, Thou liest in the middle of the continent Like a strong heart, Since the early days of the ancestors thou hast Borne the burden of a high mission, Much tried Austria, Much tried Austria.  Bravely towards the new ages See us striding, free, and faithful, Assiduous and full of hope, Unified, in jubilation choirs, let us Pledge allegiance to thee, Fatherland Much beloved Austria, Much beloved Austria."
+countries$lyrics[countries$country=="Israel"] <- "As long as deep in the heart, The soul of a Jew yearns, And towards the East An eye looks to Zion, Our hope is not yet lost, The hope of two thousand years, To be a free people in our land, The land of Zion and Jerusalem."
+  
+# Final Clean up
 countries$lyrics <- gsub("([A-Z])", " \\1",countries$lyrics)  # Insert spaces in front of all capital letters.
 countries$lyrics <- trimws(countries$lyrics)  # remove leading and training blanks
 
-# Outstanding problems.
-# Some anthems do not pick up the english language version when it exists.
-# Some anthems seem to not have English lyrics.
 
 countries$anthem_type <- factor(countries$anthem_type)
 summary(countries$anthem_type)
