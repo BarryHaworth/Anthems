@@ -7,6 +7,8 @@
 # Update:
 # Found http://anthemworld.com/ website with a more comprehensive 
 # collection of English language translations of national anthems
+# Attempted to rip the contents, but ended up simpler to
+# Cut and past into a spreadsheet
 
 library(rvest)
 library(dplyr)
@@ -18,41 +20,14 @@ PROJECT_DIR <- "c:/R/Anthems"
 DATA_DIR    <- "c:/R/Anthems/data"
 
 # Get List of Countries from Anthemworld.com:
-anthemworld <- read.xlsx(paste0(DATA_DIR,"/anthemworld.xlsx")) 
-names(anthemworld) <- c("region","country")
-# anthemworld <- anthemworld[anthemworld$country!='Cote dvoire',] # Drop this one for now.
+anthemworld <- read.xlsx(paste0(DATA_DIR,"/anthemworld_lyrics.xlsx")) 
+names(anthemworld) 
 
-anthemworld$url <- paste0("http://anthemworld.com/",gsub(" ","_",anthemworld$country),".html")
-
+anthemworld$lyrics <- gsub('\n',' ',anthemworld$lyrics)  # Replace \n with spaces.
+#anthemworld$lyrics <- gsub("([A-Z])", " \\1",anthemworld$lyrics)  # Insert spaces in front of all capital letters.
+anthemworld$lyrics <- trimws(anthemworld$lyrics)                  # remove leading and training blanks
 
 head(anthemworld)
-
-# Manual updates to country names
-# Not needed.  Updates are made in the spreadsheet
-
-# Get the lyrics:  Loop through the countries and extract the lyrics.
-
-anthemworld["lyrics"] <- ""
-
-# test read
-webpage <- read_html(anthemworld$url[3])
-c_list  <- html_nodes(webpage,'dl')
-lyrics  <- html_text(c_list[1])
-print(lyrics)
-
-for (c in 1:length(anthemworld$country)){
-  print(paste(c,anthemworld$country[c],anthemworld$url[c]))
-  webpage <- read_html(anthemworld$url[c])
-  c_list  <- html_nodes(webpage,'dl')
-  lyrics  <- html_text(c_list[1])
-  #    print(lyrics)
-  anthemworld$lyrics[c] <- lyrics
-}
-
-# Outstanding problems.
-# Some anthems do not pick up the english language version when it exists.
-
-# Manually correct selected 
 
 # Final Clean up
 
