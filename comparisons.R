@@ -30,7 +30,7 @@ p <- ggplot(anthem_words_subset, aes(y=value, x=country))+
   xlab("Country") +ylab("Sentiment")
 p
 
-subset <- c("India","China (PRR)","China (Republic Of China)","Vietnam")
+subset <- c("India","China","Taiwan","Vietnam")
 
 anthem_words_subset <- anthem_words_afinn %>% filter(country %in% subset)
 
@@ -40,8 +40,40 @@ p <- ggplot(anthem_words_subset, aes(y=value, x=country))+
   xlab("Country") +ylab("Sentiment")
 p
 
-p <- ggplot(anthem_words_afinn, aes(y=value, x=country))+
+p <- ggplot(anthem_words_afinn, aes(y=value, x=region))+
   geom_boxplot() + 
-  labs(title="Sentiment Comparison by Country") +
-  xlab("Country") +ylab("Sentiment") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  labs(title="Sentiment Comparison by Region") +
+  xlab("Region") +ylab("Sentiment") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
 p
+
+# Plots by Region
+p <- ggplot(anthem_words_afinn %>% filter(region=='Asia'), aes(y=value, x=country))+
+  geom_boxplot() + 
+  labs(title="Sentiment Comparison in Asia") +
+  xlab("Region") +ylab("Sentiment") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+p
+
+p <- ggplot(anthem_words_afinn %>% filter(region=='Africa'), aes(y=value, x=country))+
+  geom_boxplot() + 
+  labs(title="Sentiment Comparison in Africa") +
+  xlab("Region") +ylab("Sentiment") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+p
+
+p <- ggplot(anthem_words_afinn %>% filter(region=='Americas'), aes(y=value, x=country))+
+  geom_boxplot() + 
+  labs(title="Sentiment Comparison in Americas") +
+  xlab("Region") +ylab("Sentiment") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+p
+
+p <- ggplot(anthem_words_afinn %>% filter(region=='Europe'), aes(y=value, x=country))+
+  geom_boxplot() + 
+  labs(title="Sentiment Comparison in Europe") +
+  xlab("Region") +ylab("Sentiment") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+p
+
+p <- ggplot(anthem_words_afinn %>% filter(region=='Oceania'), aes(y=value, x=country))+
+  geom_boxplot() + 
+  labs(title="Sentiment Comparison in Oceania") +
+  xlab("Region") +ylab("Sentiment") + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+p
+

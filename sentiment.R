@@ -11,12 +11,13 @@ PROJECT_DIR <- "c:/R/Anthems"
 DATA_DIR    <- "c:/R/Anthems/data"
 
 # Load the data
-load(paste0(DATA_DIR,"/countries.RData"))
+# load(paste0(DATA_DIR,"/countries.RData"))
+load(paste0(DATA_DIR,"/anthemworld.RData"))
 
 # Filter records with no anthem
 
-countries <- countries %>% filter(nchar(lyrics) > 5)
-head(countries$lyrics)
+anthemworld <- anthemworld %>% filter(nchar(lyrics) > 5)
+head(anthemworld$lyrics)
 
 # Sentiment Analysis
 # Number words, positive, negative
@@ -26,8 +27,8 @@ head(countries$lyrics)
 # AFINN: score that runs between -5 and 5
 
 # Split by Words
-anthem_words <- countries %>% 
-  select(country, lyrics) %>%
+anthem_words <- anthemworld %>% 
+  select(region, country, lyrics) %>%
   unnest_tokens(word, lyrics) 
 
 # Filter stop words
@@ -54,8 +55,10 @@ anthem_bing <- anthem_words_bing %>%
   count(sentiment) %>% # count the # of positive & negative words
   spread(sentiment, n, fill = 0) %>% # made data wide rather than narrow
   mutate(sentiment = positive - negative,
-         sentiment_pct = sentiment/(positive+negative))
-
+         sentiment_pct = sentiment/(positive+negative))  %>%
+  mutate(sentiment_pct = ifelse(is.na(sentiment_pct),0,sentiment_pct))   # Impute missing with zero
+  
+head(anthem_bing)
 names(anthem_bing) <- c("country","bing_negative","bing_positive","bing_neutral",
                         "bing_sentiment","bing_sentiment_pct")
 
@@ -80,7 +83,7 @@ anthem_afinn <- anthem_words_afinn %>%
 anthems <- anthem_afinn %>%
   inner_join(anthem_bing, by="country") %>%
   inner_join(anthem_nrc, by="country") %>% 
-  inner_join(countries, by="country")
+  inner_join(anthemworld, by="country")
 
 head(anthems)
 
